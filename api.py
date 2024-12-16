@@ -13,58 +13,51 @@ def load_trained_model(model_path):
     except Exception as e:
         raise Exception(f"Error loading model: {str(e)}")
 
+# Model paths
 model_path = 'cnn_model_tf'
-lstm_model_path = 'lstm_model_tf'  # Adjust the path as per your setup
+lstm_model_path = 'lstm_model_tf'
 trained_model = load_trained_model(model_path)
 lstm_model = load_trained_model(lstm_model_path)
 
 @app.route('/conv', methods=['POST'])
 def predict():
     try:
-        # Get input data
         data = request.json
         if 'input_data' not in data:
             return jsonify({'error': 'Input data is missing'}), 400
 
         input_data = np.array(data['input_data'])
-        
-        # Ensure the input shape matches the model's requirement
+
         if len(input_data.shape) != 2 or input_data.shape[1] != 14:
             return jsonify({'error': 'Invalid input shape. Expected (n_samples, 14)'}), 400
 
-        input_data = input_data.reshape(-1, 14, 1)  # Reshape for Conv1D model
-        
-        # Make predictions
-        predictions = trained_model.predict(input_data)
-        predictions = predictions.tolist()  # Convert numpy array to list for JSON serialization
-        
+        input_data = input_data.reshape(-1, 14, 1)
+        predictions = trained_model.predict(input_data).tolist()
+
         return jsonify({'predictions': predictions})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 @app.route('/lstm', methods=['POST'])
 def lstmpredict():
     try:
-        # Get input data
         data = request.json
         if 'input_data' not in data:
             return jsonify({'error': 'Input data is missing'}), 400
 
         input_data = np.array(data['input_data'])
-        
-        # Ensure the input shape matches the model's requirement
+
         if len(input_data.shape) != 2 or input_data.shape[1] != 14:
             return jsonify({'error': 'Invalid input shape. Expected (n_samples, 14)'}), 400
 
-        input_data = input_data.reshape(-1, 14, 1)  # Reshape for Conv1D model
-        
-        # Make predictions
-        predictions = lstm_model.predict(input_data)
-        predictions = predictions.tolist()  # Convert numpy array to list for JSON serialization
-        
+        input_data = input_data.reshape(-1, 14, 1)
+        predictions = lstm_model.predict(input_data).tolist()
+
         return jsonify({'predictions': predictions})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Use the PORT environment variable provided by Render
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
