@@ -2,10 +2,8 @@ from flask import Flask, request, jsonify
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
 
 # Load the trained model
 def load_trained_model(model_path):
@@ -15,8 +13,8 @@ def load_trained_model(model_path):
     except Exception as e:
         raise Exception(f"Error loading model: {str(e)}")
 
-model_path = 'best_model.keras'
-lstm_model_path = 'lstm_model.keras'  # Adjust the path as per your setup
+model_path = 'cnn_model_tf'
+lstm_model_path = 'lstm_model_tf'  # Adjust the path as per your setup
 trained_model = load_trained_model(model_path)
 lstm_model = load_trained_model(lstm_model_path)
 
